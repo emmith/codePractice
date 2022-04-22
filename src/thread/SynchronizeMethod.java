@@ -1,15 +1,17 @@
 package thread;
 
 public class SynchronizeMethod {
-    private int count = 0;
+    private volatile int count = 0;
 
     //这个方法和add方法等价，都是以当前实例为锁，锁住了非原子操作
     public synchronized void addSyn(int n) {
-        count += n;
+        for (int i = 0; i < 10000; i++)
+            count += n;
     }
 
     public synchronized void decSyn(int n) {
-        count -= n;
+        for (int i = 0; i < 10000; i++)
+            count -= n;
     }
 
     public int get() {
@@ -18,7 +20,6 @@ public class SynchronizeMethod {
 
     public static void main(String[] args) throws InterruptedException {
         SynchronizeMethod counter1 = new SynchronizeMethod();
-        SynchronizeMethod counter2 = new SynchronizeMethod();
 
         Thread thread1 = new Thread(() -> {
             counter1.addSyn(100);
@@ -27,10 +28,10 @@ public class SynchronizeMethod {
             counter1.decSyn(100);
         });
         Thread thread3 = new Thread(() -> {
-            counter2.addSyn(10);
+            counter1.addSyn(10);
         });
         Thread thread4 = new Thread(() -> {
-            counter2.decSyn(10);
+            counter1.decSyn(10);
         });
 
         thread1.start();
@@ -38,8 +39,11 @@ public class SynchronizeMethod {
         thread3.start();
         thread4.start();
 
-        System.out.println("counter1 " + counter1.count);
-        System.out.println("counter2 " + counter2.count);
+        thread1.join();
+        thread2.join();
+        thread3.join();
+        thread4.join();
 
+        System.out.println("counter1 " + counter1.count);
     }
 }
