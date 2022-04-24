@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 // 使用future有序的获取返回结果，测试
 public class FutureTest {
-    public final ThreadPoolExecutor es = new ThreadPoolExecutor(2, 2, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(500));
+    public ThreadPoolExecutor es = new ThreadPoolExecutor(2, 2, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(500));
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         FutureTest futureTest = new FutureTest();
@@ -19,7 +19,7 @@ public class FutureTest {
     }
 
     //测试future，获取返回值
-    private  void futureTest1() throws InterruptedException, ExecutionException {
+    private void futureTest1() throws InterruptedException, ExecutionException {
         System.out.println("------------使用future购买一个包子和一份面条-----------");
         long start = System.currentTimeMillis();
         Future<String> future1 = es.submit(new MakeBum());
@@ -41,7 +41,7 @@ public class FutureTest {
     }
 
     //测试future，获取返回值
-    private  void futureTest2() throws InterruptedException, ExecutionException {
+    private void futureTest2() throws InterruptedException, ExecutionException {
         System.out.println("------------使用future购买三个包子和一份面条-----------");
         long start = System.currentTimeMillis();
         Future<String> future1 = es.submit(new MakeBum());
@@ -87,64 +87,63 @@ public class FutureTest {
         long end = System.currentTimeMillis();
         System.out.println("准备完毕时间：" + (end - start));
     }
+}
 
-    //做面条 3秒
-    class MakeNoodle implements Callable<String> {
-        @Override
-        public String call() throws Exception {
-            try {
-                Thread.sleep(1000 * 3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return "面条已经制作完毕 耗时3秒";
+//做面条 3秒
+class MakeNoodle implements Callable<String> {
+    @Override
+    public String call() throws Exception {
+        try {
+            Thread.sleep(1000 * 3);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-    }
-
-    //做包子 1秒
-    class MakeBum implements Callable<String> {
-        @Override
-        public String call() throws Exception {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return "包子已经制作完毕 耗时1秒";
-        }
-    }
-
-    class BumThread extends Thread {
-
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(1000 * 3);
-                System.out.println("包子准备完毕 耗时3秒");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    class ColdDishThread extends Thread {
-
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(1000);
-                System.out.println("凉菜准备完毕 耗时1秒");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
+        return "面条已经制作完毕 耗时3秒";
     }
 }
 
-/** 总结
-    future可以获取返回结果
-    并且可以保证获取结果的顺序
- *
+//做包子 1秒
+class MakeBum implements Callable<String> {
+    @Override
+    public String call() throws Exception {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "包子已经制作完毕 耗时1秒";
+    }
+}
+
+class BumThread extends Thread {
+
+    @Override
+    public void run() {
+        try {
+            Thread.sleep(1000 * 3);
+            System.out.println("包子准备完毕 耗时3秒");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+
+class ColdDishThread extends Thread {
+
+    @Override
+    public void run() {
+        try {
+            Thread.sleep(1000);
+            System.out.println("凉菜准备完毕 耗时1秒");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+/**
+ * 总结
+ * future可以获取返回结果
+ * 并且可以保证获取结果的顺序
  */
