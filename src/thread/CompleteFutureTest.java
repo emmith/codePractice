@@ -2,7 +2,6 @@ package thread;
 
 
 import org.testng.annotations.Test;
-import utils.ThreadUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,11 +12,16 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static java.lang.Character.isUpperCase;
 import static org.testng.Assert.*;
 import static utils.ThreadUtil.randomSleep;
 
 
+/**
+ * 这里我们采用的是CompletableFuture.completedFuture("emmith")
+ * 这种预置了结果了方式
+ *
+ *
+ */
 public class CompleteFutureTest {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
     }
@@ -47,6 +51,51 @@ public class CompleteFutureTest {
         }, es);
 
         es.shutdown();
+    }
+
+    /**
+     * 有返回值的方式
+     */
+    @Test
+    void supplyAsyncExample() throws InterruptedException {
+        CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
+            randomSleep();
+            return "Hello World!";
+        }).thenApply((res) -> {
+            randomSleep();
+            return res + "!!!";
+        });
+
+        cf.thenAccept((result) -> {
+            System.out.println("上一步的返回结果 " + result);
+        });
+
+        //不加join，CompletableFuture的默认线程池会马上关闭,可能不会显示上面的输出
+        cf.join();
+    }
+
+    /**
+     * 有返回值的方式
+     *
+     * 使用自定义线程池 设置普通线程闲置后等待10秒关闭
+     */
+    @Test
+    void supplyAsyncExample1() throws InterruptedException {
+        ThreadPoolExecutor es = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(100));
+        CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
+            randomSleep();
+            return "Hello World!";
+        }, es).thenApply((res) -> {
+            randomSleep();
+            return res + "!!!";
+        });
+
+        cf.thenAccept((result) -> {
+            System.out.println("上一步的返回结果 " + result);
+        });
+
+        es.shutdown();
+        es.awaitTermination(3, TimeUnit.SECONDS);
     }
 
     /**
@@ -123,28 +172,46 @@ public class CompleteFutureTest {
     }
 
 
-    //所有的按顺序执行完成，才返回7599ms
+    /**
+     * 只有有一个执行完就会返回
+     *
+     * anyOf的返回值为 Object
+     */
     @Test
-    static void anyOfExample() {
+    static void anyOfExample() throws InterruptedException {
         StringBuilder result = new StringBuilder();
-        List<String> messages = Arrays.asList("a", "b", "c");
+        List<String> messages = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
         List<CompletableFuture<String>> futures = messages.stream()
-                .map(msg -> CompletableFuture.completedFuture(msg).thenApply(s -> delayedUpperCase(s)))
+                .map(msg -> CompletableFuture.completedFuture(msg).thenApplyAsync(s -> delayedUpperCase(s)))
                 .collect(Collectors.toList());
-        CompletableFuture.anyOf(futures.toArray(new CompletableFuture[futures.size()])).whenComplete((res, th) -> {
-            if(th == null) {
-                assertTrue(isUpperCase((String) res));
-                result.append(res);
+        CompletableFuture res = CompletableFuture.anyOf(futures.toArray(new CompletableFuture[futures.size()])).whenCompleteAsync((v, th) -> {
+            if (th == null) {
+                assertTrue((isUpperCase((String) v)));
+                result.append(v);
             }
         });
+        System.out.println(res.join() + "   "+ result);
         assertTrue(result.length() > 0, "Result was empty");
     }
 
-    //所有的按顺序执行完成，才返回7457ms
+    /**
+     * allOf 没有返回值
+     * 为void类型
+     * CompletableFuture<void>
+     *
+     *
+     *  所有的按顺序执行完成，才返回1557ms
+     *  下面的执行顺序为
+     *  a -> b -> c -> d -> finish
+     *  为串行化的顺序
+     *
+     *  因此我们将其用于串行化任务
+     *
+     */
     @Test
     static void allOfExample() {
         StringBuilder result = new StringBuilder();
-        List<String> messages = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "a", "b", "c", "d", "e", "f", "g");
+        List<String> messages = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
         List<CompletableFuture<String>> futures = messages.stream()
                 .map(msg -> CompletableFuture.completedFuture(msg).thenApply(s -> delayedUpperCase(s)))
                 .collect(Collectors.toList());
@@ -157,11 +224,22 @@ public class CompleteFutureTest {
         assertTrue(result.length() > 0, "Result was empty");
     }
 
-    //所有的按异步执行完成后，返回 1547ms
+    /**
+     * 所有的按异步执行完成后，返回 647ms
+     *
+     *  下面的执行顺序为
+     *   a ->
+     *   b ->
+     *   c ->
+     *   d ->
+     *   并行执行，时间取其中执行时间最长的线程
+     *
+     *   我们将其用于批量发请求
+     */
     @Test
     static void allOfAsyncExample() {
         StringBuilder result = new StringBuilder();
-        List<String> messages = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "a", "b", "c", "d", "e", "f", "g");
+        List<String> messages = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
         List<CompletableFuture<String>> futures = messages.stream()
                 .map(msg -> CompletableFuture.completedFuture(msg).thenApplyAsync(s -> delayedUpperCase(s)))
                 .collect(Collectors.toList());

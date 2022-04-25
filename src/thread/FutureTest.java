@@ -6,12 +6,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 // 使用future有序的获取返回结果，测试
 public class FutureTest {
     public ThreadPoolExecutor es = new ThreadPoolExecutor(2, 2, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(500));
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
+    public static void main(String[] args) throws ExecutionException, InterruptedException, TimeoutException {
         FutureTest futureTest = new FutureTest();
         futureTest.futureTest1();
         futureTest.futureTest2();
@@ -19,7 +20,7 @@ public class FutureTest {
     }
 
     //测试future，获取返回值
-    private void futureTest1() throws InterruptedException, ExecutionException {
+    private void futureTest1() throws InterruptedException, ExecutionException, TimeoutException {
         System.out.println("------------使用future购买一个包子和一份面条-----------");
         long start = System.currentTimeMillis();
         Future<String> future1 = es.submit(new MakeBum());
