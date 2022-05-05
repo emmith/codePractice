@@ -1,3 +1,6 @@
+import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.PriorityQueue;
 
 public class Main {
     /**
@@ -72,5 +75,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        System.out.println(loader);
+        System.out.println(loader.getParent());
+        System.out.println(loader.getParent().getParent());
     }
 }
