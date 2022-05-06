@@ -91,10 +91,13 @@ public class Singleton2 {
      *
      *  在volatile变量的读写 的前后分别加入内存屏障
      *
-     *  在volatile变量写的前面加入 内存屏障 防止前面的写和volatile的写发生重排序
-     *  在volatile变量写的后面加入 内存屏障 防止后面的写和volatile的写发生重排序
-     *  在volatile变量读的前面加入 内存屏障 防止前面的读和volatile的读发生重排序
-     *  在volatile变量读的后面加入 内存屏障 防止后面的读和volatile的读发生重排序
+     *  在volatile变量写的前面加入 StoreStore内存屏障 防止前面的写和volatile的写发生重排序
+     *  在volatile变量写的后面加入 StoreLoad内存屏障 防止后面的写和volatile的读/写发生重排序
+     *  在volatile变量读的前面加入 LoadLoad内存屏障 防止前面的读和volatile的读发生重排序
+     *  在volatile变量读的后面加入 LoadStore内存屏障 防止后面的写和volatile的读发生重排序
+     *
+     *  在X86架构下，cpu不会对 写写 读读 读写 重排序，也就是说在这种架构下只需加 StoreLoad内存屏障即可
+     *  这种内存屏障是采用的 lock汇编指令来实现的
      *
      *
      *
