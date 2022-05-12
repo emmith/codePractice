@@ -1,7 +1,3 @@
-import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.PriorityQueue;
-
 public class Main {
     /**
      * n 个孩子站成一排。给你一个整数数组 ratings 表示每个孩子的评分。
@@ -75,9 +71,37 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        System.out.println(loader);
-        System.out.println(loader.getParent());
-        System.out.println(loader.getParent().getParent());
+        System.out.println();
+        System.out.println();
     }
+
+    private static int binSearch(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+
+        while (left <= right) {
+            int mid = ((right - left) >> 1) + left;
+
+            if (nums[mid] < target) {
+                left = mid + 1;
+            }else {
+                right = mid - 1;
+            }
+        }
+
+        System.out.println("l  " + left);
+        System.out.println("r  " + right);
+
+        return nums[left] == target ? left : -1;
+    }
+
+    private static int bitCount(int num) {
+        int count = 0;
+        while (num != 0) {
+            count += (num % 2);
+            num = num >> 1;
+        }
+        return count;
+    }
+
 }
