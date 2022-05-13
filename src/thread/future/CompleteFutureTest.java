@@ -1,4 +1,4 @@
-package thread;
+package thread.future;
 
 
 import org.testng.annotations.Test;

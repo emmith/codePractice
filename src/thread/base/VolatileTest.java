@@ -1,4 +1,4 @@
-package thread;
+package thread.base;
 
 public class VolatileTest {
     public static volatile int j = 0;

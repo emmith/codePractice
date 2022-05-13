@@ -1,4 +1,4 @@
-package thread;
+package thread.queue;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;

@@ -1,4 +1,4 @@
-package thread;
+package thread.threadpool;
 
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;

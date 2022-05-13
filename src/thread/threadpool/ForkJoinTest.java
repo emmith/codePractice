@@ -1,4 +1,4 @@
-package thread;
+package thread.threadpool;
 
 import org.testng.annotations.Test;
 

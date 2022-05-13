@@ -1,4 +1,4 @@
-package thread;
+package thread.base;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

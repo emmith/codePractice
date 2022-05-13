@@ -1,4 +1,4 @@
-package thread;
+package thread.threadpool;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -85,6 +85,7 @@ class task implements Runnable {
     public void run() {
         System.out.println("进入了task方法！！！");
         int i = 1 / 0;
+        Thread.yield();
     }
 }
 

@@ -1,4 +1,4 @@
-package thread;
+package thread.base;
 
 public class TreadHelloWorld {
     //main start会执行在 thread start和stop之前，至于main stop在前还是后

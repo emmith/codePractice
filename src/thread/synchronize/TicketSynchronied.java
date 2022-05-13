@@ -1,4 +1,4 @@
-package thread;
+package thread.synchronize;
 
 public class TicketSynchronied {
 
@@ -161,7 +161,7 @@ mx线程先申请到锁 why线程在blocked状态
 
 "why" #15 prio=5 os_prio=0 cpu=13.33ms elapsed=0.61s tid=0x00007efd5825dbd0 nid=0x5b7be waiting for monitor entry  [0x00007efd1edfc000]
    java.lang.Thread.State: BLOCKED (on object monitor)
-	at thread.TicketConsumer2.run(TicketSynchronied.java:97)
+	at thread.synchronize.TicketConsumer2.run(TicketSynchronied.java:97)
 	- waiting to lock <0x00000007ffe7c708> (a java.lang.Integer)
 	at java.lang.Thread.run(java.base@17.0.3/Thread.java:833)
 
@@ -169,7 +169,7 @@ mx线程先申请到锁 why线程在blocked状态
 "mx" #16 prio=5 os_prio=0 cpu=11.87ms elapsed=0.61s tid=0x00007efd5825e9b0 nid=0x5b7bf waiting on condition  [0x00007efd1ecfc000]
    java.lang.Thread.State: TIMED_WAITING (sleeping)
 	at java.lang.Thread.sleep(java.base@17.0.3/Native Method)
-	at thread.TicketConsumer2.run(TicketSynchronied.java:101)
+	at thread.synchronize.TicketConsumer2.run(TicketSynchronied.java:101)
 	- locked <0x00000007ffe7c708> (a java.lang.Integer)
 	at java.lang.Thread.run(java.base@17.0.3/Thread.java:833)
 
@@ -184,7 +184,7 @@ mx线程锁的位置是<0x00000007ffe7c6f8>
 "why" #15 prio=5 os_prio=0 cpu=13.50ms elapsed=10.09s tid=0x00007efd5825dbd0 nid=0x5b7be waiting on condition  [0x00007efd1edfc000]
     java.lang.Thread.State: TIMED_WAITING (sleeping)
     at java.lang.Thread.sleep(java.base@17.0.3/Native Method)
-    at thread.TicketConsumer2.run(TicketSynchronied.java:101)
+    at thread.synchronize.TicketConsumer2.run(TicketSynchronied.java:101)
     - locked <0x00000007ffe7c708> (a java.lang.Integer)
     at java.lang.Thread.run(java.base@17.0.3/Thread.java:833)
 
@@ -192,7 +192,7 @@ mx线程锁的位置是<0x00000007ffe7c6f8>
 "mx" #16 prio=5 os_prio=0 cpu=15.28ms elapsed=10.09s tid=0x00007efd5825e9b0 nid=0x5b7bf waiting on condition  [0x00007efd1ecfc000]
     java.lang.Thread.State: TIMED_WAITING (sleeping)
     at java.lang.Thread.sleep(java.base@17.0.3/Native Method)
-    at thread.TicketConsumer2.run(TicketSynchronized.java:101)
+    at thread.synchronize.TicketConsumer2.run(TicketSynchronized.java:101)
     - locked <0x00000007ffe7c6f8> (a java.lang.Integer)
     at java.lang.Thread.run(java.base@17.0.3/Thread.java:833)
 

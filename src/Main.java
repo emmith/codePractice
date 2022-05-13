@@ -71,8 +71,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println();
-        System.out.println();
+        System.out.println(-1 << 29);
+        System.out.println(Long.toHexString(1405370640));
+        //<0x00000007ffe7c708>
     }
 
     private static int binSearch(int[] nums, int target) {
