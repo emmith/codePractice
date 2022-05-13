@@ -1,10 +1,13 @@
 package thread;
 
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -74,9 +77,19 @@ public class ThreadPoolTest {
 
     /*
     计划任务线程池
+
+    我们测试发现 线程池子内部某个线程异常时候，并没有抛出异常
+
+
+    为了能看到异常，我们需要自定义线程工厂
      */
     private static void scheduleThreadPoolTest() throws InterruptedException {
-        ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+                .setNameFormat("schedule-pool-%d")
+                .setUncaughtExceptionHandler((thread, throwable) -> System.out.println("ThreadPool got exception" + thread + throwable.getMessage()))
+                .build();
+
+        ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2, namedThreadFactory);
         //延时任务
         threadPool.schedule(() -> {
             System.out.println("Hello world");
@@ -88,7 +101,7 @@ public class ThreadPoolTest {
         测试发现，如果上一个任务没有执行完下一个任务会阻塞
         */
         threadPool.scheduleAtFixedRate(() -> {
-            System.out.println("Hello world Bob!");
+            System.out.println(Thread.currentThread().getName() + " Hello world Bob!");
             for (int i = 0, k = 0; i < 1000000000;i++){
                 k  += i * i * i * i % 100000007;
                 k  *= i % 100000007;
@@ -97,9 +110,9 @@ public class ThreadPoolTest {
             测试抛出异常能否继续执行
             经过测试，出现异常后不会再执行后面的定时任务了
              */
-            for (int i = 0; i < 10;i++) {
-                System.out.println(10 / i);
-            }
+
+            System.out.println(10 / 0);
+
         }, 2,100, TimeUnit.MILLISECONDS );
 
         /*
@@ -109,7 +122,7 @@ public class ThreadPoolTest {
 
         */
         threadPool.scheduleWithFixedDelay(() -> {
-            System.out.println("Hello world Alice!");
+            System.out.println(Thread.currentThread().getName() + " Hello world Alice!");
             for (int i = 0, k = 0; i < 1000000000;i++){
                 k  += i * i * i * i % 100000007;
                 k  *= i % 100000007;
