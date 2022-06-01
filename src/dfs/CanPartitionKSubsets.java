@@ -1,7 +1,5 @@
 package dfs;
 
-import java.util.Arrays;
-
 public class CanPartitionKSubsets {
     public boolean canPartitionKSubsets(int[] nums, int k) {
         int sum = 0;
@@ -32,15 +30,12 @@ public class CanPartitionKSubsets {
 
         for (int i = start; i < nums.length; i++) {
             if (!flag[i] && bucket + nums[i] <= target) {
-                bucket = bucket + nums[i];
                 flag[i] = true;
 
                 if (dfs(nums, flag, target, k, i + 1, bucket)) {
                     return true;
                 }
-
                 flag[i] = false;
-                bucket = bucket - nums[i];
 
                 if (bucket == 0) break;
             }
