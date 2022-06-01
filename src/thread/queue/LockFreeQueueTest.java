@@ -25,7 +25,7 @@ public class LockFreeQueueTest<E> {
         tail.set(node);
     }
 
-    public void enqueue(E e) {
+    public void enqueue(E e) { 
         Node<E> node = new Node<>();
         node.value = e;
         node.next.set(null);

@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ReentrantLockTest {
 
-    private static final int TASK_NUMBER = 10000000;
+    private static final int TASK_NUMBER = 100;
     private static final int THREAD_NUMBER = 4;
 
     public static void main(String[] args) throws InterruptedException {
@@ -20,9 +20,9 @@ public class ReentrantLockTest {
             var thread = new Thread(() -> {
                 while (true) {
                     try {
-//                        String threadName = Thread.currentThread().getName();
+                        String threadName = Thread.currentThread().getName();
                         String s = ts.getTask();
-//                        System.out.printf("%s exec task : %s \n", threadName, s);
+                        System.out.printf("%s exec task : %s \n", threadName, s);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -35,13 +35,13 @@ public class ReentrantLockTest {
         var add = new Thread(() -> {
             for (int i = 0; i < TASK_NUMBER; i++) {
                 String task = "task-" + i;
-//                System.out.printf("add %s \n", task);
+                System.out.printf("add %s \n", task);
                 ts.addTask(task);
-//                try {
-//                    Thread.sleep(1);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
         long start = System.currentTimeMillis();

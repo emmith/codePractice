@@ -1,4 +1,8 @@
+import java.util.ArrayList;
+
 public class Main {
+    static int a = 10;
+
     /**
      * n 个孩子站成一排。给你一个整数数组 ratings 表示每个孩子的评分。
      * <p>
@@ -63,7 +67,7 @@ public class Main {
             左边序列为(first(首项) + first+leftLen-2(末项)) * (leftLen-1)(项数) / 2
             右边序列为(1(首项) + rightLen-1(末项)) * (rightLen-1)(项数) / 2
              */
-            res += (top + ((leftLen + first * 2 - 2) * (leftLen - 1)  + rightLen * (rightLen - 1)) / 2);
+            res += (top + ((leftLen + first * 2 - 2) * (leftLen - 1) + rightLen * (rightLen - 1)) / 2);
             //找下一个山峰
             i = j;
         }
@@ -71,29 +75,33 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println(-1 << 29);
-        System.out.println(Long.toHexString(1405370640));
-        //<0x00000007ffe7c708>
+//        int[] nums = {1,4,5,6};
+//        System.out.println(binSearch(nums, 2));
+//        System.out.println(0x80000000);
+//        int x = foo();
+//        System.out.println((2 * Math.pow(2, 30) % 512));
+//        System.out.println(ClassLayout.parseInstance(new TestNullObjectSize()).toPrintable());
+//        LongAdder
+        ArrayList a = new ArrayList<>();
+        a.clone();
     }
 
     private static int binSearch(int[] nums, int target) {
         int left = 0;
         int right = nums.length - 1;
 
-        while (left <= right) {
+        while (left < right) {
             int mid = ((right - left) >> 1) + left;
 
             if (nums[mid] < target) {
                 left = mid + 1;
-            }else {
-                right = mid - 1;
-            }
+            } else
+                right = mid;
         }
 
         System.out.println("l  " + left);
         System.out.println("r  " + right);
-
-        return nums[left] == target ? left : -1;
+        return left;
     }
 
     private static int bitCount(int num) {
@@ -105,4 +113,31 @@ public class Main {
         return count;
     }
 
+
+    public static int foo() {
+        int x;
+        try {
+            x = 1;
+            return x;
+        } catch (Exception e) {
+            x = 2;
+            return x;
+        } finally {
+            x = 3;
+        }
+    }
+}
+
+class TestNullObjectSize {
+    public final static int age = 10;
+
+    public final static int number = 10;
+
+    public static int old = 10;
+
+    public int hh = 10;
+
+    private void print() {
+        System.out.println("ssss");
+    }
 }

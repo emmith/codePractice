@@ -1,7 +1,5 @@
 package lindcode.dp;
 
-import java.util.Arrays;
-
 public class CopyBooks {
 
     /**
