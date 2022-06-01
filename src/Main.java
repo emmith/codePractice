@@ -1,17 +1,12 @@
 import java.util.ArrayList;
 
 public class Main {
-    static int a = 10;
-
-
-
     public static void main(String[] args) {
 //        int[] nums = {1,4,5,6};
 //        System.out.println(binSearch(nums, 2));
 //        System.out.println(0x80000000);
 //        int x = foo();
-//        System.out.println((2 * Math.pow(2, 30) % 512));
-//        System.out.println(ClassLayout.parseInstance(new TestNullObjectSize()).toPrintable());
+//        System.out.println((2 * Math.pow(2, 30) % 512))
 //        LongAdder
         ArrayList a = new ArrayList<>();
         a.clone();
@@ -56,19 +51,5 @@ public class Main {
         } finally {
             x = 3;
         }
-    }
-}
-
-class TestNullObjectSize {
-    public final static int age = 10;
-
-    public final static int number = 10;
-
-    public static int old = 10;
-
-    public int hh = 10;
-
-    private void print() {
-        System.out.println("ssss");
     }
 }
