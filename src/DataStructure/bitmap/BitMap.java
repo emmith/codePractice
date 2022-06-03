@@ -1,4 +1,4 @@
-package DataStructure;
+package DataStructure.bitmap;
 
 
 public class BitMap {
@@ -52,7 +52,7 @@ public class BitMap {
         return (data[byteIndex] >> bitIndex) & 0x1;
     }
 
-    public int countBit1() {
+    public int countBit() {
         int res = 0;
         for (int i = 0; i < capacity ;i++) {
             res += bitsinbyte[Byte.toUnsignedInt(data[i])];
@@ -60,7 +60,7 @@ public class BitMap {
         return res;
     }
 
-    public static void main(String[] args) {
+    private static void test1() {
         int capacity = 100000000;
         BitMap bitMap = new BitMap(capacity);
         for (int i = 0; i < capacity * 8 ;i++) {
@@ -68,10 +68,20 @@ public class BitMap {
         }
 
         long start = System.currentTimeMillis();
-        int  m = bitMap.countBit1();
+        int  m = bitMap.countBit();
         long mid = System.currentTimeMillis();
 
         System.out.println("查表法 " + (mid - start) + "ms");
         System.out.println(m);
+    }
+
+    private static void test2() {
+        BitMap bitMap = new BitMap(1);
+        bitMap.set(7, 1);
+        System.out.println(bitMap.data[0]);
+    }
+
+    public static void main(String[] args) {
+        test2();
     }
 }

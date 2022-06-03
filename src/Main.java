@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class Main {
     public static void main(String[] args) {
 //        int[] nums = {1,4,5,6};
@@ -8,8 +6,7 @@ public class Main {
 //        int x = foo();
 //        System.out.println((2 * Math.pow(2, 30) % 512))
 //        LongAdder
-        ArrayList a = new ArrayList<>();
-        a.clone();
+        System.out.println(0x1f);
     }
 
     private static int binSearch(int[] nums, int target) {

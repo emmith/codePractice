@@ -1,7 +1,7 @@
-package DataStructure;
+package DataStructure.bitmap;
 
 public class BitMapInt {
-    public int[] data;
+    protected int[] data;
 
     private int capacity;
 
@@ -50,7 +50,7 @@ public class BitMapInt {
 
     public int countBit() {
         int res = 0;
-        for (int j = 0 ;j < capacity ;j++) {
+        for (int j = 0; j < capacity; j++) {
             long i = Integer.toUnsignedLong(data[j]);
             i = (i & 0x55555555) + ((i >>> 1) & 0x55555555);
             i = (i & 0x33333333) + ((i >>> 2) & 0x33333333);
@@ -62,16 +62,29 @@ public class BitMapInt {
         return res;
     }
 
-    public static void main(String[] args) {
+    private static void test1() {
         int capacity = 100000000 / 4;
         BitMapInt bitMapInt = new BitMapInt(capacity);
-        for (int i = 0; i < 32 * capacity ;i++) {
+        for (int i = 0; i < 32 * capacity; i++) {
             bitMapInt.set(i, 1);
         }
         long start = System.currentTimeMillis();
         int n = bitMapInt.countBit();
         long end = System.currentTimeMillis() - start;
-        System.out.println("位图法 "+ end + "ms");
+        System.out.println("位图法 " + end + "ms");
         System.out.println(n);
+    }
+
+    private static void test2() {
+        BitMapInt bitMapInt = new BitMapInt(1);
+        char[] num = Integer.toBinaryString(225).toCharArray();
+        for (int i = 0; i < num.length ;i++) {
+            bitMapInt.set(7 - i, num[i] - '0');
+        }
+        System.out.println(bitMapInt.data[0]);
+    }
+
+    public static void main(String[] args) {
+        test2();
     }
 }
