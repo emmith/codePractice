@@ -4,9 +4,11 @@ import org.openjdk.jol.info.ClassLayout;
 
 /**
  * 查看对象数据分布
+ * 验证锁是否无法降级
  *
  * 注意：jdk8开始，默认关闭了偏向锁
  * 需要手动开启偏向锁
+ *
  * -XX:+UseBiasedLocking
  */
 public class PrintObjectInfo {
@@ -15,9 +17,10 @@ public class PrintObjectInfo {
     public static void main(String[] args) throws InterruptedException {
 
 //        testNoBlock();
-//        testBiasLock();
-        testThinLock2();
-//        testHeavyLock();
+//        testBiasLock1();
+//        testThinLock1();
+//                testThinLock4();
+        testHeavyLock();
         //数组对象会多一个字段,占用四个字节
 //        TestNullObjectSize[] test = new TestNullObjectSize[10];
 //        System.out.println(ClassLayout.parseInstance(test).toPrintable());
@@ -41,12 +44,38 @@ public class PrintObjectInfo {
     // 并将自己的线程id放进去
     // 我们发现 即使退出synchronized mark word依然是偏向锁的状态 这样是为了方便线程下一次能快速获得锁
     // 偏向锁状态下 偏向锁标识 1 锁标识 01
+
+    // !!!!!!!!补充，如果hashcode有值，会直接到轻量级锁
     private static void testBiasLock() throws InterruptedException {
         System.out.println("加锁之前-----------------------------------------------------");
         System.out.println(ClassLayout.parseInstance(lock).toPrintable());
+        //测试hashcode有值，是否还会有偏向锁
+//        System.out.println("计算HashCode ：  " + Integer.toHexString(lock.hashCode()));
+//        System.out.println("计算HashCode之后----------------------------------------------");
+//        System.out.println(ClassLayout.parseInstance(lock).toPrintable());
         block();
 //        lock.hashCode();
         System.out.println("加锁之后-----------------------------------------------------");
+        System.out.println(ClassLayout.parseInstance(lock).toPrintable());
+    }
+
+    // 同一个线程，连续获取锁，对象头一直是偏向锁状态
+    private static void testBiasLock1() throws InterruptedException {
+        System.out.println("加锁之前-----------------------------------------------------");
+        System.out.println(ClassLayout.parseInstance(lock).toPrintable());
+        //测试hashcode有值，是否还会有偏向锁
+//        System.out.println("计算HashCode ：  " + Integer.toHexString(lock.hashCode()));
+//        System.out.println("计算HashCode之后----------------------------------------------");
+//        System.out.println(ClassLayout.parseInstance(lock).toPrintable());
+        block();
+//        lock.hashCode();
+        System.out.println("加锁之后-----------------------------------------------------");
+        System.out.println(ClassLayout.parseInstance(lock).toPrintable());
+
+        System.out.println("再次获取锁-----------------------------------------------------");
+        block();
+//        lock.hashCode();
+        System.out.println("再次获取锁之后-----------------------------------------------------");
         System.out.println(ClassLayout.parseInstance(lock).toPrintable());
     }
 
@@ -58,13 +87,17 @@ public class PrintObjectInfo {
     // 从上面可以看出
     // 1. 在没有竞争的情况下，第一个拿到锁的线程会将锁升级为偏向锁
     // 2. 在第一个线程执行完后，第二个线程来拿锁时，如果第一个线程还活着，第二个线程会将锁升级为轻量级锁（执行一次CAS操作）
-    // 3. 轻量级锁可以退化为无锁，网上的博客说锁无法降级，比较笼统，准确的说是重量级锁无法降级，但是轻量级可以
-    // 假如第一个线程死了呢，还会升级为轻量级锁吗，我们试试test2
+    // 当然，我们这里只是通过判断对象头来确认当前的锁状态，
+    // 假如第一个线程死了呢，还会升级为轻量级锁吗？
+    // 如果第一个拿到偏向锁的线程，后面再来再来获得锁，还会有偏向锁吗？
     private static void testThinLock1() throws InterruptedException {
         System.out.println("加锁之前-----------------------------------------------------");
         System.out.println(ClassLayout.parseInstance(lock).toPrintable());
         // 主线程先行，先是偏向锁
         block();
+        System.out.println("计算HashCode ：  " + Integer.toHexString(lock.hashCode()));
+        System.out.println("计算HashCode之后----------------------------------------------");
+        System.out.println(ClassLayout.parseInstance(lock).toPrintable());
         // 副线程后来，升级为轻量级锁
         new Thread(() -> {
             block();
@@ -76,7 +109,6 @@ public class PrintObjectInfo {
 
     // 测试轻量级锁，第一个线程死亡
     // 即使第一个线程死亡了，第二个线程还是会将锁升级为轻量级锁
-    // 轻量级锁，可以退化为无锁
     private static void testThinLock2() throws InterruptedException {
         System.out.println("加锁之前-----------------------------------------------------");
         System.out.println(ClassLayout.parseInstance(lock).toPrintable());
@@ -103,6 +135,71 @@ public class PrintObjectInfo {
         System.out.println(ClassLayout.parseInstance(lock).toPrintable());
     }
 
+    // 测试轻量级锁状态
+    // 加入新的线程进行竞争
+    // 锁头的状态变化   无锁 -> 偏向锁 -> 轻量级锁 -> 无锁 -> 轻量级锁
+    // 第一个线程获取偏向锁，线程1死了
+    // 第二个线程升级为轻量级锁，线程2死了
+    // 第三个线程来获取锁，依然是轻量级锁，线程3死了
+    private static void testThinLock3() throws InterruptedException {
+        System.out.println("加锁之前-----------------------------------------------------");
+        System.out.println(ClassLayout.parseInstance(lock).toPrintable());
+        // 1线程先行，先是偏向锁
+        new Thread(() -> {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            block();
+        }).start();
+        // 2线程后来，升级为轻量级锁
+        new Thread(() -> {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            block();
+        }).start();
+        Thread.sleep(1000);
+        System.out.println("退出轻量级锁之后-----------------------------------------------------");
+        System.out.println(ClassLayout.parseInstance(lock).toPrintable());
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            block();
+        }).start();
+    }
+
+    // 如果第一个拿到偏向锁的线程，后面再来再来获得锁，还会有偏向锁吗？
+    // 锁头状态 无锁 -> 偏向锁 -> 轻量级锁 -> 无锁 -> 轻量级锁
+    // 偏向锁线程，之后再来获取锁，会直接获得轻量级锁
+    // 也就是说，偏向锁，只有在刚开始只有一个线程的时候存在，只要有两个以上线程获取过锁
+    // 就会升级为轻量级锁
+    private static void testThinLock4() throws InterruptedException {
+        System.out.println("加锁之前-----------------------------------------------------");
+        System.out.println(ClassLayout.parseInstance(lock).toPrintable());
+        // 主线程先行，先是偏向锁
+        block();
+        System.out.println("计算HashCode ：  " + Integer.toHexString(lock.hashCode()));
+        System.out.println("计算HashCode之后----------------------------------------------");
+        System.out.println(ClassLayout.parseInstance(lock).toPrintable());
+        // 副线程后来，升级为轻量级锁
+        new Thread(() -> {
+            block();
+        }).start();
+        Thread.sleep(2000);
+        System.out.println("加锁之后-----------------------------------------------------");
+        System.out.println(ClassLayout.parseInstance(lock).toPrintable());
+        // 主线程，再次获取锁，测试是否还有偏向锁
+        block();
+    }
+
     /*
      * 重量级锁状态下，对象头的状态
      *
@@ -125,7 +222,8 @@ public class PrintObjectInfo {
         new Thread(() -> {
             block();
         }).start();
-        Thread.sleep(10);
+        Thread.sleep(30);
+
         System.out.println("加锁之后-----------------------------------------------------");
         System.out.println(ClassLayout.parseInstance(lock).toPrintable());
     }

@@ -6,9 +6,14 @@ public class Main {
 //        int x = foo();
 //        System.out.println((2 * Math.pow(2, 30) % 512))
 //        LongAdder
-        System.out.println(0x1f);
+//        System.out.println(0x1f);
+
+        System.out.println(handle("test.email+alex@leetcode.com"));
+        System.out.println(handle("test.e.mail+bob.cathy@leetcode.com"));
+        System.out.println(handle("testemail+david@lee.tcode.com"));
     }
 
+    // 二分找到左边界
     private static int binSearch(int[] nums, int target) {
         int left = 0;
         int right = nums.length - 1;
@@ -48,5 +53,35 @@ public class Main {
         } finally {
             x = 3;
         }
+    }
+
+    private static String handle(String email) {
+        char[] mail = email.toCharArray();
+
+        // @符号的位置
+        int pos = 0;
+        StringBuilder name = new StringBuilder();
+
+        for (int i = 0; i < email.length() ;i++) {
+            if (mail[i] >= 'a' && mail[i] <= 'z') {
+                name.append(mail[i]);
+            }else if (mail[i] == '.') {
+                continue;
+            }else if (mail[i] == '+') {
+                while(mail[i] != '@') {
+                    i++;
+                }
+                pos = i;
+                break;
+            }else if (mail[i] == '@') {
+                pos = i;
+                break;
+            }
+        }
+
+        name.append('@');
+        name.append(email.substring(pos + 1));
+
+        return name.toString();
     }
 }
