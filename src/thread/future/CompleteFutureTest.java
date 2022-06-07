@@ -218,10 +218,12 @@ public class CompleteFutureTest {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).whenComplete((v, th) -> {
             futures.forEach(cf -> {
                 assertTrue(isUpperCase(cf.getNow(null)));
+                result.append(cf.getNow(null));
             });
             result.append("done");
         });
         assertTrue(result.length() > 0, "Result was empty");
+        System.out.println(result);
     }
 
     /**
@@ -234,6 +236,8 @@ public class CompleteFutureTest {
      *   d ->
      *   并行执行，时间取其中执行时间最长的线程
      *
+     *   结果依然按顺序 a b c d保存
+     *
      *   我们将其用于批量发请求
      */
     @Test
@@ -243,13 +247,15 @@ public class CompleteFutureTest {
         List<CompletableFuture<String>> futures = messages.stream()
                 .map(msg -> CompletableFuture.completedFuture(msg).thenApplyAsync(s -> delayedUpperCase(s)))
                 .collect(Collectors.toList());
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).whenComplete((v, th) -> {
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).whenCompleteAsync((v, th) -> {
             futures.forEach(cf -> {
                 assertTrue(isUpperCase(cf.getNow(null)));
+                result.append(cf.getNow(null));
             });
             result.append("done");
         }).join();
         assertTrue(result.length() > 0, "Result was empty");
+        System.out.println(result);
     }
 
     private static String delayedUpperCase(String s) {

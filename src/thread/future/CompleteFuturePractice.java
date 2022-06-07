@@ -66,7 +66,7 @@ public class CompleteFuturePractice {
             join方法内部调用了waitGet方法
             如果没有获取到值，会一直尝试直到获取到值
          */
-        System.out.println(res.join());
+//        System.out.println(res.join());
 
     }
 
