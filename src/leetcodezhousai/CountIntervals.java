@@ -40,7 +40,8 @@ public class CountIntervals {
 
     public void merge(List<int[]> intervals, int left, int right) {
         // 先用二分查找判断是否需要合并
-        int L = binarySearch(intervals, right);
+        int L = binarySearch1(intervals, right);
+        System.out.println(binarySearch(intervals, right) == binarySearch1(intervals, right));
         int l_temp = left;
         int r_temp = right;
 
@@ -122,6 +123,35 @@ public class CountIntervals {
         // 处理边界值，也就是[[5,6]]中搜 2 这种情况，加一为了处理4这个数字
         // 因为4可以和5合并
         return intervals.get(l)[0] > target + 1 ? -1 : l;
+    }
+
+    // 二分查找，找到小于目标的最大区间
+    //例如[1,2],[6,7]中查找 4 会返回 [1,2]的下标0
+    private int binarySearch1(List<int[]> intervals, int target) {
+        int l = 0;
+        int r = size - 1;
+
+        // 确保返回的下标的选项一定小于target
+        while (l <= r) {
+            int mid = ((r - l) >> 1) + l;
+            if (intervals.get(mid)[0] > target) {
+                r = mid - 1;
+            } else {
+                l = mid + 1;
+            }
+        }
+
+        if (r < 0) {
+            return r;
+        }
+
+        if (r == size) {
+            return size - 1;
+        }
+
+        // 处理边界值，也就是[[5,6]]中搜 2 这种情况，加一为了处理4这个数字
+        // 因为4可以和5合并
+        return intervals.get(r)[0] > target + 1 ? -1 : r;
     }
 
     @Test
