@@ -2,6 +2,7 @@ package thread.future;
 
 
 import org.testng.annotations.Test;
+import utils.ThreadUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 import static org.testng.Assert.*;
 import static utils.ThreadUtil.randomSleep;
+import static utils.ThreadUtil.rm;
 
 
 /**
@@ -55,19 +57,23 @@ public class CompleteFutureTest {
 
     /**
      * 有返回值的方式
+     *
+     * thenApply thenAccept 和前一步用的用一个线程
      */
     @Test
-    void supplyAsyncExample() throws InterruptedException {
+    void supplyAsyncExample() {
         CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
             randomSleep();
+            ThreadUtil.printThreadInfo("Hello World!");
             return "Hello World!";
         }).thenApply((res) -> {
             randomSleep();
+            ThreadUtil.printThreadInfo("Hello World!" + "!!!");
             return res + "!!!";
         });
 
         cf.thenAccept((result) -> {
-            System.out.println("上一步的返回结果 " + result);
+            ThreadUtil.printThreadInfo("上一步的返回结果 " + result);
         });
 
         //不加join，CompletableFuture的默认线程池会马上关闭,可能不会显示上面的输出
@@ -136,39 +142,43 @@ public class CompleteFutureTest {
     }
 
     // thenAccept的异步方式
+    // 理论上也会用新的线程执行，看线程空闲状况
     @Test
     void thenAcceptAsyncExample() {
-        List<String> list= List.of("Hello", "World");
-        StringBuilder res = new StringBuilder();
+        List<String> list= List.of("1", "2", "3", "4");
 
         list.stream().forEach(i -> {
-            CompletableFuture.completedFuture(i).thenAcceptAsync( s -> {
-                res.append(s);
-            }).join();
+            CompletableFuture.supplyAsync(() -> {
+                ThreadUtil.printThreadInfo("supply" + i);
+                return i;
+            }).thenAcceptAsync( s -> {
+                ThreadUtil.printThreadInfo("accept" + s);
+            });
         });
-        System.out.println(res);
+        ThreadUtil.millsSleep(200);
     }
 
     /**
      * thenApply的异步方法
      * thenApplyAsync
      *
-     * 用join来获取返回值
-     * join等线程执行完成
-     * 要不然会等于空值
+     * 理论上thenApplyAsync和前面不是一个线程
+     * 不过如果线程上一个线程马上空闲了
+     * 可能相同
      */
     @Test
     void thenApplyAsyncExample() throws InterruptedException {
-        CompletableFuture cf = CompletableFuture.completedFuture("emmith").thenApplyAsync(s -> {
+        CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
+            ThreadUtil.printThreadInfo("服务员结账");
+            return "hello";
+        }).thenApplyAsync((v) -> {
             //判断当前是否为守护线程
             assertTrue(Thread.currentThread().isDaemon());
-            randomSleep();
-            return s.toUpperCase();
+            ThreadUtil.printThreadInfo("另一个服务员开发票");
+            return v;
         });
 
-        assertNull(cf.getNow(null));
-        //大写操作完成后，异步用join获取返回值
-        assertEquals("EMMITH", cf.join());
+        cf.join();
     }
 
 
@@ -271,4 +281,137 @@ public class CompleteFutureTest {
         }
         return true;
     }
+
+    /**
+     * thenCompose 前一个任务完成后
+     * 才交给后一个任务
+     * 后一个任务supplyAsync
+     * 表示又交给了另一个线程服务员
+     *
+     * 这里我们是假设饭已经做好了
+     */
+    @Test
+    void testThenCompose() {
+        ThreadUtil.printThreadInfo("小王进入餐厅");
+        ThreadUtil.printThreadInfo("小王点菜-番茄炒蛋");
+
+        CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
+            ThreadUtil.printThreadInfo("厨师做菜");
+            ThreadUtil.millsSleep(200);
+            ThreadUtil.printThreadInfo("制作番茄炒蛋完成......");
+            return "美味的番茄炒蛋";
+        }).thenCompose(dist -> CompletableFuture.supplyAsync(() ->{
+            ThreadUtil.printThreadInfo("服务员打饭");
+            ThreadUtil.millsSleep(100);
+            return "米饭" + dist;
+        }));
+
+        ThreadUtil.printThreadInfo("小王开始打王者");
+        ThreadUtil.printThreadInfo(String.format("小王开始吃 %s", cf.join()));
+    }
+
+    /**
+     * thenCompose 前一个任务完成后
+     * 才交给后一个任务
+     * 后一个任务supplyAsync
+     * 表示又交给了另一个线程服务员
+     *
+     * 这里我们的饭没做好
+     * 服务员和厨师同时进行
+     * 服务员做饭
+     * 厨师炒菜
+     */
+    @Test
+    void testThenCombine() {
+        ThreadUtil.printThreadInfo("小王进入餐厅");
+        ThreadUtil.printThreadInfo("小王点菜-番茄炒蛋");
+
+        CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
+            ThreadUtil.printThreadInfo("厨师做菜");
+            ThreadUtil.millsSleep(200);
+            ThreadUtil.printThreadInfo("厨师制作番茄炒蛋完成......");
+            return "美味的番茄炒蛋";
+        }).thenCombine(CompletableFuture.supplyAsync(() ->{
+            ThreadUtil.printThreadInfo("服务员做饭");
+            ThreadUtil.millsSleep(200);
+            return "米饭";
+        }), (dist, rice) -> {
+            ThreadUtil.printThreadInfo("服务员打饭");
+            ThreadUtil.millsSleep(100);
+            return dist + rice;
+        });
+
+        ThreadUtil.printThreadInfo("小王开始打王者");
+        ThreadUtil.printThreadInfo(String.format("小王开始吃 %s", cf.join()));
+    }
+
+    /**
+     * 两个任务，有一个结束了，就结束任务
+     */
+    @Test
+    void testApplyEither() {
+        ThreadUtil.printThreadInfo("小王正在公交车站等公交车");
+        ThreadUtil.printThreadInfo("等待 999 or 888 路公交到来");
+
+        CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
+            ThreadUtil.printThreadInfo("999正在路上....");
+            randomSleep();
+            return "999";
+        }).applyToEither(CompletableFuture.supplyAsync(() -> {
+            ThreadUtil.printThreadInfo("888正在路上....");
+            randomSleep();
+            return "888";
+        }), first -> first);
+
+        ThreadUtil.printThreadInfo(String.format("小王上%s车了", cf.join()));
+    }
+
+    /**
+     * 两个任务，有一个结束了，就结束任务
+     *
+     * 用一个新的线程执行applyToEitherAsync
+     */
+    @Test
+    void testApplyEitherAsync() {
+        ThreadUtil.printThreadInfo("小王给小美打电话");
+
+        CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
+            ThreadUtil.printThreadInfo("正在通话连线中....");
+            ThreadUtil.millsSleep(700);
+            return "电话未接通";
+        }).applyToEitherAsync(CompletableFuture.supplyAsync(() -> {
+            randomSleep();
+            ThreadUtil.printThreadInfo("小美接通了电话....");
+            return "正在和小美通话";
+        }), first -> first);
+
+        ThreadUtil.printThreadInfo(String.format("%s", cf.join()));
+    }
+
+    @Test
+    void testHandleException() {
+        ThreadUtil.printThreadInfo("小王给小美打电话");
+
+        CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
+            ThreadUtil.printThreadInfo("正在通话连线中....");
+            ThreadUtil.millsSleep(700);
+            return "电话未接通";
+        }).applyToEitherAsync(CompletableFuture.supplyAsync(() -> {
+            randomSleep();
+            ThreadUtil.printThreadInfo("小美接通了电话....");
+            return "正在和小美通话";
+        }), first -> {
+            ThreadUtil.printThreadInfo(first);
+            if (3 < rm.nextInt(10))
+                throw new RuntimeException("小王手机没电了，自动关机");
+            return first;
+        }).exceptionally(e -> {
+            ThreadUtil.printThreadInfo(e.getMessage());
+            ThreadUtil.printThreadInfo("小王用座机打电话给小美");
+            return "小王用座机给小美打电话";
+        });
+
+        ThreadUtil.printThreadInfo(String.format("%s", cf.join()));
+    }
+
 }
