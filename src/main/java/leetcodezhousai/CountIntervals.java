@@ -1,6 +1,7 @@
 package leetcodezhousai;
 
-import org.testng.annotations.Test;
+
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -155,7 +156,7 @@ public class CountIntervals {
     }
 
     @Test
-    void test1() {
+    public void test1() {
         CountIntervals ci = new CountIntervals();
         ci.add(1, 2);
         ci.add(913, 936);
@@ -167,7 +168,7 @@ public class CountIntervals {
     }
 
     @Test
-    void test2() {
+    public void test2() {
         CountIntervals ci = new CountIntervals();
         ci.add(811, 882);
         ci.add(49, 149);
@@ -186,7 +187,7 @@ public class CountIntervals {
     }
 
     @Test
-    void test3() {
+    public void test3() {
         CountIntervals ci = new CountIntervals();
         ci.add(99, 100);
         ci.add(97, 98);

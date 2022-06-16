@@ -1,7 +1,7 @@
 package thread.future;
 
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 import utils.ThreadUtil;
 
 import java.util.List;

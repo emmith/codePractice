@@ -1,6 +1,6 @@
 package thread.base;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 import utils.ThreadUtil;
 
 /**
@@ -28,7 +28,7 @@ public class InterruptTest {
 
     // 线程运行时打断
     @Test
-    void test1() throws InterruptedException {
+    public void test1() throws InterruptedException {
         // 先将标志位设置为true
         Thread.currentThread().interrupt();
 
@@ -47,7 +47,7 @@ public class InterruptTest {
 
     // 线程睡眠时打断
     @Test
-    void test2() throws InterruptedException {
+    public void test2() throws InterruptedException {
         Thread tt = new Thread(() -> {
             try {
                 ThreadUtil.printThreadInfo("线程开始");
@@ -66,7 +66,7 @@ public class InterruptTest {
     // 测试isInterrupted()
     // isInterrupted()只是读取中断标记
     @Test
-    void test3() throws InterruptedException {
+    public void test3() throws InterruptedException {
         Thread tt = new Thread(() -> {
             long start = System.currentTimeMillis();
             while (System.currentTimeMillis() - start < 1) {
@@ -83,7 +83,7 @@ public class InterruptTest {
     // 测试interrupted()
     // interrupted()会重置中断标记
     @Test
-    void test4() throws InterruptedException {
+    public void test4() throws InterruptedException {
         Thread tt = new Thread(() -> {
             long start = System.currentTimeMillis();
             while (System.currentTimeMillis() - start < 1) {

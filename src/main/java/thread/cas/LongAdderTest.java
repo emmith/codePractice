@@ -1,6 +1,6 @@
 package thread.cas;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
@@ -23,7 +23,7 @@ public class LongAdderTest {
 
 
     @Test
-    void testLongAdder() {
+    public void testLongAdder() {
         long start = System.currentTimeMillis();
         IntStream.rangeClosed(1, THREAD_COUNT).parallel().forEach(i -> {
             for (int j = 0; j < LOOP_COUNT; j++) {
@@ -36,7 +36,7 @@ public class LongAdderTest {
 
 
     @Test
-    void testAtomicInteger() {
+    public void testAtomicInteger() {
         long start = System.currentTimeMillis();
         IntStream.rangeClosed(1, THREAD_COUNT).parallel().forEach(i -> {
             for (int j = 0; j < LOOP_COUNT; j++) {

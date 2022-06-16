@@ -1,6 +1,8 @@
 package thread.threadpool;
 
-import org.testng.annotations.Test;
+
+
+import org.junit.Test;
 
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
@@ -22,7 +24,7 @@ public class ForkJoinTest {
      * Arrays.parallelSort就是利用的这个线程池
      */
     @Test
-    void forkJoinTest() {
+    public void forkJoinTest() {
         ForkJoinTask forkJoinTask = new SumTask(start, end);
         long res = (long) ForkJoinPool.commonPool().invoke(forkJoinTask);
         System.out.println(res);
@@ -30,7 +32,7 @@ public class ForkJoinTest {
 
     //1785ms
     @Test
-    void test() {
+    public void test() {
         long sum = 0;
         for (int i = start; i <= end; i++) {
             sum += i;
@@ -40,7 +42,7 @@ public class ForkJoinTest {
 
     //300ms
     @Test
-    void streamTest() {
+    public void streamTest() {
         long sum = LongStream.rangeClosed(start, end).parallel().sum();
         System.out.println(sum);
     }

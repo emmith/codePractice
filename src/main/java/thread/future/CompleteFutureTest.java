@@ -1,7 +1,7 @@
 package thread.future;
 
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 import utils.ThreadUtil;
 
 import java.util.Arrays;
@@ -13,7 +13,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.testng.Assert.*;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static utils.ThreadUtil.randomSleep;
 import static utils.ThreadUtil.rm;
 
@@ -38,7 +40,7 @@ public class CompleteFutureTest {
      * runAsync参数为Runnable 没有返回值
      */
     @Test
-    void runAsyncExample() {
+    public void runAsyncExample() {
         //不指定线程池，默认使用ForkJoinPool
         CompletableFuture cf = CompletableFuture.runAsync(() -> {
             System.out.println(Math.random());
@@ -61,7 +63,7 @@ public class CompleteFutureTest {
      * thenApply thenAccept 和前一步用的用一个线程
      */
     @Test
-    void supplyAsyncExample() {
+    public void supplyAsyncExample() {
         CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
             randomSleep();
             ThreadUtil.printThreadInfo("Hello World!");
@@ -86,7 +88,7 @@ public class CompleteFutureTest {
      * 使用自定义线程池 设置普通线程闲置后等待10秒关闭
      */
     @Test
-    void supplyAsyncExample1() throws InterruptedException {
+    public void supplyAsyncExample1() throws InterruptedException {
         ThreadPoolExecutor es = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(100));
         CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
             randomSleep();
@@ -115,7 +117,7 @@ public class CompleteFutureTest {
      * 如果当前没有执行完后面的会阻塞
      */
     @Test
-    void thenApplyExample() {
+    public void thenApplyExample() {
         CompletableFuture cf = CompletableFuture.completedFuture("emmith").thenApply(s -> {
             //判断当前是否为守护线程
             assertFalse(Thread.currentThread().isDaemon());
@@ -129,7 +131,7 @@ public class CompleteFutureTest {
 
     // 如果不需要返回值，可以使用thenAccept
     @Test
-    void thenAcceptExample() {
+    public void thenAcceptExample() {
         List<String> list= List.of("Hello", "World");
         StringBuilder res = new StringBuilder();
 
@@ -144,7 +146,7 @@ public class CompleteFutureTest {
     // thenAccept的异步方式
     // 理论上也会用新的线程执行，看线程空闲状况
     @Test
-    void thenAcceptAsyncExample() {
+    public void thenAcceptAsyncExample() {
         List<String> list= List.of("1", "2", "3", "4");
 
         list.stream().forEach(i -> {
@@ -167,7 +169,7 @@ public class CompleteFutureTest {
      * 可能相同
      */
     @Test
-    void thenApplyAsyncExample() throws InterruptedException {
+    public void thenApplyAsyncExample() throws InterruptedException {
         CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
             ThreadUtil.printThreadInfo("服务员结账");
             return "hello";
@@ -201,7 +203,7 @@ public class CompleteFutureTest {
             }
         });
         System.out.println(res.join() + "   "+ result);
-        assertTrue(result.length() > 0, "Result was empty");
+        assertTrue("Result was empty", result.length() > 0);
     }
 
     /**
@@ -232,7 +234,7 @@ public class CompleteFutureTest {
             });
             result.append("done");
         });
-        assertTrue(result.length() > 0, "Result was empty");
+        assertTrue("Result was empty", result.length() > 0);
         System.out.println(result);
     }
 
@@ -264,7 +266,7 @@ public class CompleteFutureTest {
             });
             result.append("done");
         }).join();
-        assertTrue(result.length() > 0, "Result was empty");
+        assertTrue("Result was empty", result.length() > 0);
         System.out.println(result);
     }
 
@@ -291,7 +293,7 @@ public class CompleteFutureTest {
      * 这里我们是假设饭已经做好了
      */
     @Test
-    void testThenCompose() {
+    public void testThenCompose() {
         ThreadUtil.printThreadInfo("小王进入餐厅");
         ThreadUtil.printThreadInfo("小王点菜-番茄炒蛋");
 
@@ -322,7 +324,7 @@ public class CompleteFutureTest {
      * 厨师炒菜
      */
     @Test
-    void testThenCombine() {
+    public void testThenCombine() {
         ThreadUtil.printThreadInfo("小王进入餐厅");
         ThreadUtil.printThreadInfo("小王点菜-番茄炒蛋");
 
@@ -349,7 +351,7 @@ public class CompleteFutureTest {
      * 两个任务，有一个结束了，就结束任务
      */
     @Test
-    void testApplyEither() {
+    public void testApplyEither() {
         ThreadUtil.printThreadInfo("小王正在公交车站等公交车");
         ThreadUtil.printThreadInfo("等待 999 or 888 路公交到来");
 
@@ -372,7 +374,7 @@ public class CompleteFutureTest {
      * 用一个新的线程执行applyToEitherAsync
      */
     @Test
-    void testApplyEitherAsync() {
+    public void testApplyEitherAsync() {
         ThreadUtil.printThreadInfo("小王给小美打电话");
 
         CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
@@ -389,7 +391,7 @@ public class CompleteFutureTest {
     }
 
     @Test
-    void testHandleException() {
+    public void testHandleException() {
         ThreadUtil.printThreadInfo("小王给小美打电话");
 
         CompletableFuture cf = CompletableFuture.supplyAsync(() -> {
