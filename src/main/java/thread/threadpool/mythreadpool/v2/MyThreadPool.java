@@ -1,5 +1,7 @@
 package thread.threadpool.mythreadpool.v2;
 
+import lombok.SneakyThrows;
+
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -68,17 +70,14 @@ public class MyThreadPool {
         }
     }
 
+    @SneakyThrows
     public static void main(String[] args) {
-        MyThreadPool threadPool = new MyThreadPool(new ArrayBlockingQueue<>(10), 4);
+        MyThreadPool threadPool = new MyThreadPool(new ArrayBlockingQueue<>(20), 8);
 
         IntStream.rangeClosed(1, 30).forEach(i -> {
-            try {
-                threadPool.execute(() -> {
-                    System.out.println(Thread.currentThread().getName() + " exec task :" + i);
-                });
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            threadPool.execute(() -> {
+                System.out.println(Thread.currentThread().getName() + " exec task :" + i);
+            });
         });
     }
 }
