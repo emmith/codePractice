@@ -1,9 +1,13 @@
 package designmodel.observer;
 
-public class ZhongLi implements EventListener{
+public class ZhongLi extends EventListener {
+    public ZhongLi(String _name) {
+        name = _name;
+    }
+
     @Override
     public void update(String msg) {
         System.out.println(msg);
-        System.out.println("Zhongli 准备看公众号了");
+        System.out.println(name + "准备看公众号了");
     }
 }

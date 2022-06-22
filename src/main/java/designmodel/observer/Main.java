@@ -5,9 +5,9 @@ public class Main {
         EventManager eventManager = new EventManager(FamousMan.RELEASE_TWEETS, FamousMan.RELEASE_VIDEO);
         FamousMan famousMan = new FamousMan(eventManager);
 
-        Xiao xiao = new Xiao();
+        Xiao xiao = new Xiao("魈");
         eventManager.subscribe(FamousMan.RELEASE_VIDEO, xiao);
-        ZhongLi zhongLi = new ZhongLi();
+        ZhongLi zhongLi = new ZhongLi("钟离");
         eventManager.subscribe(FamousMan.RELEASE_TWEETS, zhongLi);
 
         famousMan.releaseTweets();

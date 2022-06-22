@@ -1,5 +1,7 @@
 package designmodel.observer;
 
-public interface EventListener {
-    void update(String msg);
+public abstract class EventListener {
+    protected String name;
+
+    public abstract void update(String msg);
 }
