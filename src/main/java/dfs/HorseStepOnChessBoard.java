@@ -14,8 +14,8 @@ import java.util.PriorityQueue;
  */
 public class HorseStepOnChessBoard {
     int[][] visit = new int[9][9];
-    int X = 9;
-    int Y = 9;
+    int X = 8;
+    int Y = 8;
     int[] step1 = {1, 1, -1, -1, 2, 2, -2, -2};
     int[] step2 = {2, -2, 2, -2, 1, -1, 1, -1};
 
@@ -73,7 +73,7 @@ public class HorseStepOnChessBoard {
 
         HorseStepOnChessBoard horseStepOnChessBoard = new HorseStepOnChessBoard();
         long a = System.currentTimeMillis();
-        horseStepOnChessBoard.dfs(7, 7, 1);
+        horseStepOnChessBoard.dfs(6, 5, 1);
         System.out.println(System.currentTimeMillis() - a + "ms");
         for (int[] num : horseStepOnChessBoard.visit) {
             System.out.println(Arrays.toString(num));

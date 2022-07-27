@@ -43,17 +43,14 @@ public class HorseOnChessboard {
         }
         for (int i = 0; i < 8; i++) {
             if (check(x + step1[i], y + step2[i])) {
-                step++;
-                boolean result = dfs(x + step1[i], y + step2[i], step);//参数局部变量，并不对x做改变
+                boolean result = dfs(x + step1[i], y + step2[i], step + 1);//参数局部变量，并不对x做改变
                 if (result == true)//一直走到最后，若满足条件输出，若不满足回溯
                     return true;
-                //这里节点使用的是局部变量x+step1，因此节点不用回溯
-                flag[x + step1[i]][y + step2[i]] = 0;
-                matrix[x + step1[i]][y + step2[i]] = 0;
-                step--;
             }
         }
-
+        //回溯
+        flag[x][y] = 0;
+        matrix[x][y] = 0;
         return false;
     }
 
@@ -69,7 +66,7 @@ public class HorseOnChessboard {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         createMatrix();
-        boolean f = dfs(0, 0, 1);
+        boolean f = dfs(7, 7, 1);
         long end = System.currentTimeMillis();
         System.out.println(end - start + "ms");
         System.out.println(f);

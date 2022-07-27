@@ -1,7 +1,12 @@
 package designmodel.observer;
 
+import java.util.HashMap;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Main {
+
     public static void main(String[] args) {
+
         EventManager eventManager = new EventManager(FamousMan.RELEASE_TWEETS, FamousMan.RELEASE_VIDEO);
         FamousMan famousMan = new FamousMan(eventManager);
 
@@ -12,5 +17,6 @@ public class Main {
 
         famousMan.releaseTweets();
         famousMan.releaseVideo();
+
     }
 }
