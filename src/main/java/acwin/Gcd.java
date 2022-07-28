@@ -25,7 +25,6 @@ public class Gcd {
         if (val == 0) {
             return b;
         }
-        int temp = b;
         a = b;
         b = val;
         return gcd1(a, b);
