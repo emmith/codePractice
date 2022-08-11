@@ -2,6 +2,8 @@ package DataStructure.heap;
 
 import utils.PrintUtil;
 
+import java.util.PriorityQueue;
+
 public class MinHeap {
     private final int DEFAULT_CAPACITY = 11;
 
@@ -55,7 +57,7 @@ public class MinHeap {
     //插入元素，向上调整
     private void adjustUp(int i, int e) {
         while (i > 0) {
-            int parent = i >>> 1;
+            int parent = (i - 1) >>> 1;
             int parentE = element[parent];
             if (e >= parentE) {
                 break;
@@ -72,7 +74,7 @@ public class MinHeap {
             int left = (i << 1) + 1;
             int right = left + 1;
             //选择左右孩子中小的一个
-            if (right + 1 < size && element[right] < element[left]) {
+            if (right < size && element[right] < element[left]) {
                 left = right;
             }
             if (e <= element[left]) {
@@ -89,10 +91,11 @@ public class MinHeap {
     }
 
     public static void main(String[] args) {
-        MinHeap minHeap = new MinHeap(20);
-        int n = 20;
-        while (n > 0) {
-            minHeap.push(n--);
+        int[] nums = {5,1,1,2,0,0};
+        MinHeap minHeap = new MinHeap(nums.length);
+        int n = 0;
+        while (n < nums.length) {
+            minHeap.push(nums[n++]);
         }
         minHeap.print();
         while (!minHeap.isEmpty()) {
