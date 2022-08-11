@@ -2,7 +2,6 @@ package DataStructure.heap;
 
 import utils.PrintUtil;
 
-import java.util.PriorityQueue;
 
 public class MinHeap {
     private final int DEFAULT_CAPACITY = 11;
