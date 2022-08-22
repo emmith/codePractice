@@ -1,17 +1,29 @@
 package thread.threadpool;
 
 
-
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.StopWatch;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.LongStream;
 
 public class ForkJoinTest {
     int start = 0;
     int end = 2000000000;
+
+    static int[] num;
+
+    static {
+        num = new int[1000000000];
+        for (int i = 0; i < num.length;i++) {
+            num[i] = ThreadLocalRandom.current().nextInt();
+        }
+    }
 
 
     /**
@@ -46,6 +58,26 @@ public class ForkJoinTest {
         long sum = LongStream.rangeClosed(start, end).parallel().sum();
         System.out.println(sum);
     }
+
+    @Test
+    public void testMax() {
+        StopWatch watch = DateUtil.createStopWatch();
+        ForkJoinTask task = new MaxTask(0, num.length - 1, num);
+        watch.start("1");
+        int res1 = (int) ForkJoinPool.commonPool().invoke(task);
+        watch.stop();
+        watch.start("2");
+        int res2 = 0;
+        for (int i = 0; i < num.length ;i++) {
+            res2 = Math.max(res2, num[i]);
+        }
+        watch.stop();
+        watch.start("3");
+        int res3 = Arrays.stream(num).parallel().max().getAsInt();
+        watch.stop();
+        System.out.println(watch.prettyPrint());
+        System.out.println(res1 == res2);
+    }
 }
 
 class SumTask extends RecursiveTask<Long> {
@@ -76,5 +108,41 @@ class SumTask extends RecursiveTask<Long> {
         long result = sumTask1.join() + sumTask2.join();
 
         return result;
+    }
+}
+
+
+class MaxTask extends RecursiveTask<Integer> {
+
+    int low;
+    int high;
+
+    int[] data;
+
+    private static final int threshold = 1 << 22;
+
+    public MaxTask(int low, int high, int[] data) {
+        this.low = low;
+        this.high = high;
+        this.data = data;
+    }
+
+    @Override
+    protected Integer compute() {
+        if (high - low <= threshold) {
+            int max = data[low];
+            for (int i = low; i <= high ;i++) {
+                max = Math.max(max, data[i]);
+            }
+            return max;
+        }
+        int mid = (low + high) >> 1;
+
+        MaxTask task1 = new MaxTask(low, mid, data);
+        MaxTask task2 = new MaxTask(mid + 1, high, data);
+        invokeAll(task1, task2);
+
+        int res = Math.max(task1.join(), task2.join());
+        return res;
     }
 }
