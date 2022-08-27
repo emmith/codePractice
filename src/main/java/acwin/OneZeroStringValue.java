@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * 牛客：串的价值
+ * https://www.nowcoder.com/questionTerminal/16976852ad2f4e26a1ff9f555234cab2
  */
 public class OneZeroStringValue {
 
