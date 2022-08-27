@@ -1,50 +1,47 @@
 package ms;
 
-import java.util.Arrays;
+import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
+// 微软 8.26第一题最优解思路
+// 求字符串中所有字母都是出现偶数次的最长子串 字母都是小写字母
+// 字符串最大长度 100000
+// 暴力枚举每个子串为On^2会超时
+// 偶数次出现，如果给字母编码，这样的子串异或的值一定是零
+// a -> 1
+// b ->10
+// c -> 100
+// ....这样每一个字母代表一个二进制位，用一个26位的整数，就可以表示出所有状态
+// 用前缀异或记录每一个前缀的状态，相同状态之差中间必为偶数个字母
 public class Solution1 {
-    /**
-     * 每一次转账，一家银行增加，另一家减少
-     * 如果那家减钱的银行，负债了，我们借钱给他，使其刚好不负债
-     * 他向我们借的钱就是他需要的初始资金
-     */
-    public int[] solution(String R, int[] V) {
-        int aAccount = 0;
-        int bAccount = 0;
-        int aInit = 0;
-        int bInit = 0;
-        int index = 0;
-        for (char ch : R.toCharArray()) {
-            if (ch == 'A') {
-                //A的账号增加，B的账号减少
-                bAccount -= V[index];
-                //如果B银行亏钱了，我们借钱给他，使其达到不亏损状态
-                if (bAccount < 0) {
-                    bInit += Math.abs(bAccount);
-                    bAccount = 0;
-                }
-                aAccount += V[index];
-                index++;
-            } else if (ch == 'B') {
-                //B的账号增加，A的账号减少
-                aAccount -= V[index];
-                //如果A银行亏钱了，我们借钱给他，使其达到不亏损状态
-                if (aAccount < 0) {
-                    aInit += Math.abs(aAccount);
-                    aAccount = 0;
-                }
-                bAccount += V[index];
-                index++;
+    @Test
+    public void solution() {
+        int[] map = new int[26];
+        // 编码，给每个字母一个互斥的状态
+        for (int i = 0; i < map.length; i++) {
+            map[i] = (1 << i);
+        }
+
+        String str = "acddeebabab";
+        int res = 0;
+        Map<Integer, Integer> preMap = new HashMap<>();
+        // 用于处理前缀就是目标子串的情况
+        preMap.put(0, -1);
+        int ans = 0;
+
+        for (int i = 0; i < str.length(); i++) {
+            int idx = str.charAt(i) - 'a';
+            res ^= map[idx];
+            // 拥有相同的状态
+            if (preMap.containsKey(res)) {
+                ans = Math.max(ans, i - preMap.get(res));
+            } else {
+                // 从左往右遍历，只需要记录第一个状态
+                preMap.put(res, i);
             }
         }
-        int[] res = new int[2];
-        res[0] = aInit;
-        res[1] = bInit;
-        return res;
-    }
-
-    public static void main(String[] args) {
-        Solution1 solution = new Solution1();
-        solution.solution("ABAB", new int[]{10, 5, 10, 15});
+        System.out.println(ans);
     }
 }
