@@ -1,4 +1,4 @@
-package designmodel.proxy.dynamic;
+package designmodel.proxy.jdkdynamic;
 
 import designmodel.proxy.SmService;
 import designmodel.proxy.SmServiceImpl;
