@@ -14,6 +14,13 @@ public class SmsProxy implements SmService {
         System.out.println("after...\n");
     }
 
+    @Override
+    public void send(String msg) {
+        System.out.printf("before ...\n");
+        smService.send(msg);
+        System.out.println("after...\n");
+    }
+
     public static void main(String[] args) {
         SmService smService = new SmServiceImpl();
         SmService smProxy = new SmsProxy(smService);
