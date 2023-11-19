@@ -2,6 +2,7 @@ package thread.base;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class WaitAndNotifyTest {
@@ -9,11 +10,11 @@ public class WaitAndNotifyTest {
     private static final int THREAD_NUMBER = 4;
 
     public static void main(String[] args) throws InterruptedException {
-        var ts = new TaskQueue();
-        var tl = new ArrayList<Thread>();
+        TaskQueue ts = new TaskQueue();
+        List<Thread> tl = new ArrayList<Thread>();
 
         for (int i = 0; i < THREAD_NUMBER; i++) {
-            var thread = new Thread(() -> {
+            Thread thread = new Thread(() -> {
                 while (true) {
                     try {
 //                        String threadName = Thread.currentThread().getName();
@@ -28,7 +29,7 @@ public class WaitAndNotifyTest {
             tl.add(thread);
         }
 
-        var add = new Thread(() -> {
+        Thread add = new Thread(() -> {
             for (int i = 0; i < TASK_NUMBER; i++) {
                 String task = "task-" + i;
 //                System.out.printf("add %s \n", task);
@@ -44,7 +45,7 @@ public class WaitAndNotifyTest {
         add.start();
         add.join();
 
-        for (var task : tl) {
+        for (Thread task : tl) {
             task.interrupt();
         }
         //6543ms

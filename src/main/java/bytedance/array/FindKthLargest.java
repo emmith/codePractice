@@ -1,8 +1,11 @@
 package bytedance.array;
 
+import cn.hutool.core.util.RandomUtil;
 import utils.PrintUtil;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
 
 public class FindKthLargest {
     public int findKthLargest(int nums[], int k) {
@@ -24,8 +27,7 @@ public class FindKthLargest {
 
 
     public int partition(int []nums, int low ,int high) {
-        Random random = new Random();
-        int i = random.nextInt(low, high + 1);
+        int i = RandomUtil.randomInt(low, high + 1);
         int pivot = nums[i];
         int temp = nums[i];
         nums[i] = nums[low];

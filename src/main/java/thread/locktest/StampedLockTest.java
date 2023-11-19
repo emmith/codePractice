@@ -1,6 +1,9 @@
 package thread.locktest;
 
+import cn.hutool.core.util.RandomUtil;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.locks.StampedLock;
 
@@ -8,7 +11,6 @@ public class StampedLockTest {
     private final StampedLock stampedLock = new StampedLock();
     private final static int READ_THREAD_NUMBER = 10;
     private final static int WHITE_THREAD_NUMBER = 2;
-    private final static Random  random= new Random();
     private int X = 0;
     private int Y = 0;
 
@@ -60,7 +62,7 @@ public class StampedLockTest {
     }
 
     public static void main(String[] args) {
-        var tl = new ArrayList<Thread>();
+        List<Thread> tl = new ArrayList<Thread>();
 
         StampedLockTest stampedLockTest = new StampedLockTest();
         //添加读线程
@@ -74,8 +76,8 @@ public class StampedLockTest {
         //添加读线程
         for (int i = 0; i < WHITE_THREAD_NUMBER ;i++) {
             Thread wthread = new Thread(() -> {
-                int x = random.nextInt(1, 100);
-                int y = random.nextInt(1, 100);
+                int x = RandomUtil.randomInt(1, 100);
+                int y = RandomUtil.randomInt(1, 100);
                 stampedLockTest.assign(x, y);
             });
             tl.add(wthread);

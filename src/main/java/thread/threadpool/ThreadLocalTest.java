@@ -72,7 +72,7 @@ class Task implements Runnable {
 
     @Override
     public void run() {
-        try (var sqlConnection = new SqlConnection(this.sql)) {
+        try (SqlConnection sqlConnection = new SqlConnection(this.sql)) {
             /*
                 由于这三个普通方法，执行在同一个线程里
                 他们读取到本线程存储到ThreadLocal中的数据是一致的

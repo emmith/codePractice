@@ -1,6 +1,8 @@
 package thread.future;
 
 
+import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.util.ArrayUtil;
 import org.junit.Test;
 import utils.ThreadUtil;
 
@@ -132,7 +134,7 @@ public class CompleteFutureTest {
     // 如果不需要返回值，可以使用thenAccept
     @Test
     public void thenAcceptExample() {
-        List<String> list= List.of("Hello", "World");
+        List<String> list= ListUtil.of("Hello", "World");
         StringBuilder res = new StringBuilder();
 
         list.stream().forEach(i -> {
@@ -147,7 +149,7 @@ public class CompleteFutureTest {
     // 理论上也会用新的线程执行，看线程空闲状况
     @Test
     public void thenAcceptAsyncExample() {
-        List<String> list= List.of("1", "2", "3", "4");
+        List<String> list= ListUtil.of("1", "2", "3", "4");
 
         list.stream().forEach(i -> {
             CompletableFuture.supplyAsync(() -> {

@@ -24,7 +24,7 @@ public class Solution1 {
             map[i] = (1 << i);
         }
 
-        String str = "acddeebabab";
+        String str = "eabcdbcdgeafeghe";
         int res = 0;
         Map<Integer, Integer> preMap = new HashMap<>();
         // 用于处理前缀就是目标子串的情况

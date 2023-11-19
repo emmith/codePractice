@@ -3,6 +3,7 @@ package jvm;
 import java.util.HashSet;
 import java.util.Set;
 
+// jdk 8时字符串常量池在堆里面，方法区放到了堆外，又称为元空间
 public class ConstantPoolOOMTest {
 
     /**

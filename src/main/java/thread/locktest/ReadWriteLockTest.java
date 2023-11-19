@@ -1,6 +1,7 @@
 package thread.locktest;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -54,7 +55,7 @@ public class ReadWriteLockTest {
 
     public static void main(String[] args) throws InterruptedException {
         ReadWriteLockTest readWriteLockTest = new ReadWriteLockTest();
-        var tl = new ArrayList<Thread>();
+        List<Thread> tl = new ArrayList<Thread>();
         for (int i = 0; i < READ_THREAD_NUMBER ;i++) {
             Thread rthread = new Thread(() -> {
                 readWriteLockTest.getCount();

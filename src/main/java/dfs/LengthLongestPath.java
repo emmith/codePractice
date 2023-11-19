@@ -7,7 +7,7 @@ public class LengthLongestPath {
 
 
     public int lengthLongestPath(String input) {
-        if (input.isBlank()) {
+        if (input == null || input.length() == 0) {
             return 0;
         }
 

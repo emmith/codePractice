@@ -1,7 +1,9 @@
 package thread.test.printabc;
 
 public class PrintABC {
+    public static final Object lock1 = new Object();
 
+    public static volatile int state = 0;
 
     public static void main(String[] args) {
         PrintABC printABC = new PrintABC();
@@ -19,10 +21,6 @@ public class PrintABC {
     }
 
     class Task implements Runnable {
-
-        public static final Object lock1 = new Object();
-
-        public static volatile int state = 0;
 
         int preState;
 
